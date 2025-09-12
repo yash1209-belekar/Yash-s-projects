@@ -1,47 +1,53 @@
+import tkinter as tk
 import random
-import string
-import datetime
-import os
-import ctypes
-os.system("title Secure Password Generator")
-os.system('color 0a')
-d_date = datetime.datetime.now()
-reg_format_date = d_date.strftime("  %d-%m-%Y\t\t\t\t\t  Secure Password Generator\t\t\t\t  %I:%M:%S %p")
-print ('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-print (reg_format_date)
-print ('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-num=['1','2','3','4','5','6','7','8','9','0']
-upper=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-lower=['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
-specialchar='`~!@#$%^&*()_+-=[]{}|/;:,<.>?'
-specialchar=list(specialchar)
-allchar=upper+lower+specialchar
-n=(input('\n\nEnter length of your password: '))
-password=[]
 
-def simple(n):          #for simple password.
-    for i in range(0,n):
-        password.append(random.choice(upper+lower+num))
-def hard(n):
-    for i in range(0,n):    #for complex password
-        password.append(random.choice(allchar))
+# Character sets
+num = list('0123456789')
+upper = list('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+lower = list('abcdefghijklmnopqrstuvwxyz')
+specialchar = list('`~!@#$%^&*()_+-=[]{}|/;:,<.>?')
 
-def choice(n):
-    z=eval(input('Press 1 for simple password\nPress 2 for complex password\n>'))
-    if z==1:
-        simple(n)
-    if z==2:
-        hard(n)
-    elif z>2:
-        print('Wrong input')
-choice(n)
-password=''.join(password)
+# GUI setup
+root = tk.Tk()
+root.geometry("600x600+400+200")
+root.title("Password Generator")
 
-if len(password)>0:
-    print(('Your generated password is:\n'+password))
-n=input('\n\n\nEnter Filename to save it: ')
-fob=open(n+'.txt','w+')
-fob.write('Your generated password is: \n\n')
-fob.write(password)
-fob.close()
-ctypes.windll.user32.MessageBoxA(0,"Your Generated Password save successfully in a text file "+n+".txt","Message",0)
+# Widgets
+length_label = tk.Label(root, text='Length:')
+length_label.place(x=100, y=20)
+
+length_entry = tk.Text(root, height=1, width=40)
+length_entry.place(x=160, y=20)
+
+output_text = tk.Text(root, width=65, height=25)
+output_text.place(x=30, y=120)
+
+# Functions
+def show_password(password):
+    output_text.delete('1.0', tk.END)
+    output_text.insert(tk.END, password)
+
+def generate_simple():
+    try:
+        n = int(length_entry.get("1.0", 'end-1c').strip())
+        password = ''.join(random.choice(upper + lower + num) for _ in range(n))
+        show_password(password)
+    except ValueError:
+        show_password("Please enter a valid number for password length.")
+
+def generate_complex():
+    try:
+        n = int(length_entry.get("1.0", 'end-1c').strip())
+        password = ''.join(random.choice(upper + lower + num + specialchar) for _ in range(n))
+        show_password(password)
+    except ValueError:
+        show_password("Please enter a valid number for password length.")
+
+# Buttons
+simple_btn = tk.Button(root, text='Simple', command=generate_simple)
+simple_btn.place(x=200, y=80)
+
+complex_btn = tk.Button(root, text='Complex', command=generate_complex)
+complex_btn.place(x=350, y=80)
+
+root.mainloop()
